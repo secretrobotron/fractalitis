@@ -1,0 +1,23 @@
+<!doctype html>
+<html>
+  <head>
+    <title>fractalitis</title>
+    <link rel="stylesheet" href="qunit.css" />
+    <script src="../js/loader.js"></script>
+    <script>
+      (function(){
+        fractalitis(function(){
+          var ctx = new fractalitis.Context({
+                canvas: document.getElementById( "test-canvas" )
+              });
+
+          ctx.setCoordinates( 0.5, 0.6 );
+          ctx.render();
+        });
+      })();
+    </script>
+  </head>
+  <body>
+    <canvas id="test-canvas" width="400" height="400"></canvas>
+  </body>
+</html>

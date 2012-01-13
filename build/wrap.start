@@ -1,0 +1,18 @@
+/*
+fractalitis
+Copyright (c) 2011 AUTHORS
+All rights reserved.
+
+
+*/
+
+(function (root) {
+
+  // Bail if fractalitis is already loaded in the page.
+  if ( this.fractalitis ) {
+    return;
+  }
+
+  // Hold on to any global define, to allow registering this
+  // library as an AMD loader if it is on the page.
+  var oldDefine = this.define;
