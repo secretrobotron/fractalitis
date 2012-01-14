@@ -1,5 +1,7 @@
 define( [], function(){
 
+  const VERTEX_VECTOR_SIZE = 2;
+
   var __fragmentShaderSource = "" +
     "precision highp float;" +
     "varying vec2 vCoordinates;" +
@@ -24,7 +26,10 @@ define( [], function(){
 
     var _gl = glCoreOptions.canvas.getContext( "webgl" ) ||
               glCoreOptions.canvas.getContext( "experimental-webgl" ),
-        _uCoordinates;
+        _uCoordinates,
+        _tilesX = 4,
+        _tilesY = 4
+        _tiles = [];
 
     _gl.clearColor( 0.0, 0.0, 0.0, 1.0 );
     _gl.clear( _gl.COLOR_BUFFER_BIT );
@@ -66,22 +71,39 @@ define( [], function(){
     var vertexBuffer = _gl.createBuffer();
     _gl.bindBuffer( _gl.ARRAY_BUFFER, vertexBuffer );
 
-    var vertices = new Float32Array([
-      -1.0, -1.0,
-      -1.0, 1.0,
-      1.0, -1.0,
-      1.0, 1.0,
-      -1.0, 1.0
-    ]);
+    for( var i=0; i<_tilesX; ++i ){
+      for( var j=0; j<_tilesY; ++j ){
+        _tiles.push( new Float32Array([
+          // top triangle
+          2 / _tilesX * i - 1,
+          2 / _tilesY * j - 1,
+          2 / _tilesX * ( i + 1 ) - 1,
+          2 / _tilesY * j - 1,
+          2 / _tilesX * i - 1,
+          2 / _tilesY * ( j + 1 ) - 1,
+          // bottom triangle
+          2 / _tilesX * i - 1,
+          2 / _tilesY * ( j + 1 ) - 1,
+          2 / _tilesX * ( i + 1 ) - 1,
+          2 / _tilesY * j - 1,
+          2 / _tilesX * ( i + 1 ) - 1,
+          2 / _tilesY * ( j + 1 ) - 1
+        ]));
+      } //for
+    } //for
 
-    _gl.bufferData( _gl.ARRAY_BUFFER, vertices, _gl.STATIC_DRAW );
-    _gl.vertexAttribPointer( vertexAttribute, 2, _gl.FLOAT, false, 0, 0 );
+    _gl.vertexAttribPointer( vertexAttribute, VERTEX_VECTOR_SIZE, _gl.FLOAT, false, 0, 0 );
 
     _uCoordinates = _gl.getUniformLocation( shaderProgram, "uCoordinates" );
 
+    var _numVertices = _tiles[ 0 ].length / VERTEX_VECTOR_SIZE;
+
     this.render = function(){
-      _gl.drawArrays( _gl.TRIANGLE_STRIP, 0, 5 );
-      _gl.flush();
+      for( var i=0, l=_tiles.length; i<l; ++i ){
+        _gl.bufferData( _gl.ARRAY_BUFFER, _tiles[ i ], _gl.STATIC_DRAW );
+        _gl.drawArrays( _gl.TRIANGLES, 0, _numVertices );
+        _gl.flush();
+      } //for
     }; //render
 
     this.setCoordinates = function( x, y ){
